@@ -25,7 +25,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #aaddf8;
 }
 
 @keyframes App-logo-spin {
@@ -37,12 +37,21 @@
   }
 }
 
-.app-container {
-  background-image: url('https://www.hse.ru/data/2024/02/21/2093250214/894596381.jpg'); 
+html,
+body,
+#root {
+  min-height: 100vh; /* или min-height: 100%; */
+}
+
+/* Создаем псевдоэлемент для фона */
+body::before {
+  /* Или html::before, #root::before */
+  content: "";
+  background-color: #d4f0ff;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  position: absolute;
+  position: fixed; /* или absolute, в зависимости от нужного поведения */
   top: 0;
   left: 0;
   width: 100%;
@@ -50,9 +59,14 @@
   z-index: -1;
 }
 
+.app-container {
+  position: relative;
+  z-index: 0;
+}
+
 .app-container > * {
-position: relative; 
-z-index: 1; 
+  position: relative;
+  z-index: 1;
 }
 
 body {
