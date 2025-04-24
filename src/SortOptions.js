@@ -5,14 +5,12 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Radio, // Radio!
+  Radio,
   ListItemButton,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles((theme) => ({
-  // Ваши стили
-}));
+const useStyles = makeStyles((theme) => ({}));
 
 const SortOptions = ({ filters, checkedSortOptions, handleSortToggle }) => {
   const classes = useStyles();
@@ -29,12 +27,12 @@ const SortOptions = ({ filters, checkedSortOptions, handleSortToggle }) => {
             button
             key={index}
             sx={{ pl: 4 }}
-            onClick={handleSortToggle(index)} // Передаем index в handleSortToggle
+            onClick={handleSortToggle(index)}
           >
             <ListItemIcon>
               <Radio // Radio!
                 edge="start"
-                checked={checkedSortOptions === index} // Сравниваем с checkedSortOptions
+                checked={checkedSortOptions === index}
                 tabIndex={-1}
                 disableRipple
               />

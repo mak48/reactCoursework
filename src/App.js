@@ -4,33 +4,29 @@ import RegisterForm from "./RegisterForm";
 import WelcomePage from "./WelcomePage";
 import PasswordReset from "./PasswordReset";
 import DashboardPage from "./DashboardPage";
-import SignUp from "./Signup";
-import "./App.css"; 
+import SignUp from "./Process_register";
+import "./App.css";
+import UpdatePassword from "./Update_password";
+import CardDetailPage from "./CardDetailPage";
+import ProfilePage from "./ProfilePage";
+import ResetPassword from "./Reset_password";
+import ForgotPassword from "./Forgot_password";
 
 export default function App() {
   return (
     <Router>
-      <div className="app-container"> {/* Apply a class to the container */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Sign Up</Link>
-            </li>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/reset">Reset</Link>
-            </li>
-          </ul>
-        </nav>
-
+      <div className="app-container">
         <Routes>
-          <Route path="/" element={<SignUp />} />
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/login" element={<WelcomePage />} />
           <Route path="/reset" element={<PasswordReset />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/updatepassword" element={<UpdatePassword />} />
+          <Route path="/card/:cardId" element={<CardDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/reset_password" element={<ResetPassword />} />
+          <Route path="/forgot_password" element={<ForgotPassword />} />
         </Routes>
       </div>
     </Router>

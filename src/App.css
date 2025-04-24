@@ -2,18 +2,18 @@
   text-align: center;
 }
 
-.App-logo {
+.App .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
+  .App .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
-.App-header {
+.App .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -24,7 +24,7 @@
   color: white;
 }
 
-.App-link {
+.App .App-link {
   color: #aaddf8;
 }
 
@@ -40,18 +40,45 @@
 html,
 body,
 #root {
-  min-height: 100vh; /* или min-height: 100%; */
+  min-height: 100vh;
 }
 
-/* Создаем псевдоэлемент для фона */
+.submit {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
+#root.login-background::before {
+  content: "";
+  background-image: url("https://github.com/mak48/data_for_project/blob/main/background.jpg?raw=true");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+body {
+  margin: 0;
+}
+/* УДАЛИТЕ ЭТИ ГЛОБАЛЬНЫЕ СТИЛИ */
+/*
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
 body::before {
-  /* Или html::before, #root::before */
   content: "";
   background-color: #d4f0ff;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  position: fixed; /* или absolute, в зависимости от нужного поведения */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -68,7 +95,4 @@ body::before {
   position: relative;
   z-index: 1;
 }
-
-body {
-  margin: 0;
-}
+*/

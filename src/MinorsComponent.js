@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 function MinorsComponent() {
   const [minors, setMinors] = useState([]);
 
   useEffect(() => {
-    // Выполните GET-запрос к вашему эндпоинту
-    axios.get('http://localhost:8080/api/minors')
-      .then(response => {
-        // Обновите состояние компонента с полученными данными
+    axios
+      .get("http://localhost:8080/minors")
+      .then((response) => {
         setMinors(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Ошибка при получении данных о майнорах:", error);
       });
   }, []);

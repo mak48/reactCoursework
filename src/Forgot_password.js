@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
-  CssBaseline,
   Paper,
   Avatar,
   Typography,
@@ -55,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -69,11 +67,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = () => {
+const ForgotPassword = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   useEffect(() => {
     const root = document.getElementById("root");
@@ -87,26 +84,20 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/auth/authenticate", {
+      const response = await fetch("http://localhost:8080/forgot_password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userEmail", email);
-        navigate("/dashboard");
+        navigate("/reset_password");
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Неправильная почта или пароль");
-        console.error("Login failed:", response.status, errorData);
+        setError(errorData.message || "Неправильная почта");
       }
     } catch (error) {
-      console.error("Login error:", error);
       setError("Ошибка подключения к серверу");
     }
   };
@@ -115,20 +106,20 @@ const Login = () => {
     setEmail(event.target.value);
   };
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
   return (
     <div className={classes.root}>
       <AppBarMain />
       <Paper elevation={6} square className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Войти в аккаунт
-        </Typography>
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+        </Box>
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <Typography component="h1" variant="h5">
+            Восстановление пароля
+          </Typography>
+        </Box>
         <form className={classes.form} onSubmit={handleSigninSubmit} noValidate>
           <TextField
             variant="outlined"
@@ -143,27 +134,11 @@ const Login = () => {
             value={email}
             onChange={handleEmailChange}
           />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Пароль"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={handlePasswordChange}
-          />
           {error && (
             <Typography variant="body2" color="error">
               {error}
             </Typography>
           )}
-          <Link to="/forgot_password" variant="body2">
-            Забыли пароль?
-          </Link>
           <Button
             type="submit"
             fullWidth
@@ -175,18 +150,7 @@ const Login = () => {
               marginBottom: 1,
             }}
           >
-            Войти
-          </Button>
-          <Button
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            color="primary"
-            className={classes.submit}
-            component={Link}
-            to="/signup"
-          >
-            Нет учетной записи? Регистрация
+            Восстановить пароль
           </Button>
           <Box mt={5} />
         </form>
@@ -197,7 +161,7 @@ const Login = () => {
 
 const App = () => (
   <ThemeProvider theme={theme}>
-    <Login />
+    <ForgotPassword />
   </ThemeProvider>
 );
 

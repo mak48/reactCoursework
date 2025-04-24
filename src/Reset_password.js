@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
@@ -69,12 +69,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = () => {
+const ResetPassword = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const token = new URLSearchParams(window.location.search).get("token");
   useEffect(() => {
     const root = document.getElementById("root");
     root.classList.add("login-background");
@@ -87,18 +88,16 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/auth/authenticate", {
+      const response = await fetch("http://localhost:8080/reset_password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ password, confirmPassword, token }),
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userEmail", email);
+        //const data = await response.json();
+
         navigate("/dashboard");
       } else {
         const errorData = await response.json();
@@ -111,8 +110,8 @@ const Login = () => {
     }
   };
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -127,7 +126,7 @@ const Login = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Войти в аккаунт
+          Восстановление пароля
         </Typography>
         <form className={classes.form} onSubmit={handleSigninSubmit} noValidate>
           <TextField
@@ -135,35 +134,32 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Электронная почта (@edu.hse.ru)"
-            name="email"
-            autoComplete="email"
+            id="password"
+            label="Придумайте новый пароль"
+            name="password"
+            autoComplete="password"
             autoFocus
-            value={email}
-            onChange={handleEmailChange}
+            value={password}
+            onChange={handlePasswordChange}
           />
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Пароль"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={handlePasswordChange}
+            name="confirmPassword"
+            label="Подтвердите пароль"
+            type="confirmPassword"
+            id="confirmPassword"
+            autoComplete="confirmPassword"
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
           />
           {error && (
             <Typography variant="body2" color="error">
               {error}
             </Typography>
           )}
-          <Link to="/forgot_password" variant="body2">
-            Забыли пароль?
-          </Link>
           <Button
             type="submit"
             fullWidth
@@ -175,7 +171,7 @@ const Login = () => {
               marginBottom: 1,
             }}
           >
-            Войти
+            Готово
           </Button>
           <Button
             fullWidth
@@ -184,9 +180,9 @@ const Login = () => {
             color="primary"
             className={classes.submit}
             component={Link}
-            to="/signup"
+            to="/login"
           >
-            Нет учетной записи? Регистрация
+            Вход в аккаунт
           </Button>
           <Box mt={5} />
         </form>
@@ -197,7 +193,7 @@ const Login = () => {
 
 const App = () => (
   <ThemeProvider theme={theme}>
-    <Login />
+    <ResetPassword />
   </ThemeProvider>
 );
 
