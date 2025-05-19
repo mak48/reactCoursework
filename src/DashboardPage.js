@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@mui/styles";
 import {
-  AppBar,
   Toolbar,
+  Box,
+  Rating,
   Typography,
   Button,
   Drawer,
@@ -12,6 +13,7 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   ListItemIcon,
@@ -30,16 +32,20 @@ const theme = createTheme({
     drawer: 1000,
   },
   spacing: 4,
-  drawer: {
-    width: 300,
-  },
   palette: {
     primary: {
       main: "#94B4FF",
       contrastText: "#fff",
     },
     secondary: {
-      main: "#dc004e",
+      main: "#ABC4FF",
+    },
+    buttonColor: {
+      main: "#4563DD",
+    },
+    cardColor: {
+      main: "#94B4FF",
+      fade: "#EDF2FA",
     },
   },
   typography: {
@@ -62,25 +68,12 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
-  appBar: {
-    //zIndex: theme.zIndex.drawer + 300,
-  },
   title: {
     flexGrow: 1,
   },
   drawer: {
-    width: theme.drawer.width,
+    width: 300,
     flexShrink: 0,
-  },
-  cardImage: {
-    width: "100%",
-    height: "150px",
-    marginBottom: theme.spacing(1),
-    objectFit: "cover",
-    objectPosition: "center",
-  },
-  drawerPaper: {
-    width: theme.drawer.width,
     "& .MuiListItemText-root": {
       fontSize: "1rem",
       width: "100%",
@@ -92,21 +85,29 @@ const useStyles = makeStyles((theme) => ({
       boxSizing: "border-box",
     },
     "& .MuiButton-root": {
-      width: "100%",
+      width: "95%",
+      margin: "0 auto",
+      display: "block",
+      boxSizing: "border-box",
     },
+  },
+  cardImage: {
+    width: "100%",
+    height: "150px",
+    marginBottom: theme.spacing(1),
+    objectFit: "cover",
+    objectPosition: "center",
   },
   content: {
     flex: 1,
     overflowY: "auto",
-    padding: theme.spacing(3), //  Добавляем прокрутку к контенту
-  },
-  button: {
-    marginTop: "auto", // Прижимаем кнопку к низу
+    padding: theme.spacing(3),
   },
   cardContainer: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
     gap: theme.spacing(5),
+    marginLeft: theme.spacing(3),
     marginTop: theme.spacing(2),
     [theme.breakpoints.down("md")]: {
       gridTemplateColumns: "repeat(2, 1fr)",
@@ -120,6 +121,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     minHeight: "200px",
     cursor: "pointer",
+    "& .MuiCard-root": {
+      backgroundColor: `${theme.palette.cardColor.main}`,
+    },
   },
   cardMedia: {
     height: "150px",
@@ -134,14 +138,6 @@ const useStyles = makeStyles((theme) => ({
 const DashboardPage = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-
-  const navLinks = [
-    { text: "Главная", to: "/" },
-    { text: "Оставить отзыв", to: "/review" },
-    { text: "Рейтинг", to: "/rating" },
-    { text: "Поиск", to: "/search" },
-    { text: "Профиль", to: "/profile" },
-  ];
 
   const filters = {
     sort: ["Сложность", "Интересность", "Времязатратность", "Общий рейтинг"],
@@ -185,9 +181,12 @@ const DashboardPage = () => {
         const fetchedCards = response.data.map((minor) => ({
           id: minor.id,
           title: minor.title,
-          description: "minor.description",
           image: minor.link,
-          stars: "⭐⭐⭐⭐⭐",
+          difficultyRating: minor.difficultyRating,
+          interestRating: minor.interestRating,
+          timeConsumptionRating: minor.timeConsumptionRating,
+          totalRating: minor.totalRating,
+          reviewCount: minor.reviewCount,
         }));
         setCards(fetchedCards);
       })
@@ -222,6 +221,22 @@ const DashboardPage = () => {
   const handleCardClick = (cardId) => {
     navigate(`/card/${cardId}`);
   };
+  const renderStarRating = (value, reviewCount) => {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Rating
+          value={value === null ? 0 : value}
+          readOnly
+          precision={0.1}
+          size="large"
+          emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+        />
+        <Typography component="span" ml={0.5}>
+          {value === null ? "N/A" : value.toFixed(2) + " (" + reviewCount + ")"}
+        </Typography>
+      </Box>
+    );
+  };
   const handleSortButtonClick = async () => {
     const categoryIds = checkedCategories.map((index) => {
       const categoryName = filters.categories[index];
@@ -251,7 +266,11 @@ const DashboardPage = () => {
           title: minor.title,
           description: minor.description,
           image: minor.link,
-          stars: "⭐⭐⭐⭐⭐",
+          difficultyRating: minor.difficultyRating,
+          interestRating: minor.interestRating,
+          timeConsumptionRating: minor.timeConsumptionRating,
+          totalRating: minor.totalRating,
+          reviewCount: minor.reviewCount,
         }));
         setCards(fetchedCards);
       } catch (error) {
@@ -287,10 +306,13 @@ const DashboardPage = () => {
           id: minor.id,
           title: minor.title,
           image: minor.link,
-          stars: "⭐⭐⭐⭐⭐",
+          difficultyRating: minor.difficultyRating,
+          interestRating: minor.interestRating,
+          timeConsumptionRating: minor.timeConsumptionRating,
+          totalRating: minor.totalRating,
+          reviewCount: minor.reviewCount,
         }));
         setCards(fetchedCards);
-        console.log("Майноры успешно отсортированы:", response.data);
       } else {
         console.error(
           "Не удалось отсортировать майноры. Status:",
@@ -309,13 +331,7 @@ const DashboardPage = () => {
   return (
     <div className={classes.root}>
       <AppBarMain />
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
+      <Drawer className={classes.drawer} variant="permanent">
         <Toolbar />
         <div className={classes.drawer}>
           <Typography variant="subtitle1" className={classes.sidebarTitle}>
@@ -378,6 +394,9 @@ const DashboardPage = () => {
           <Button
             variant="contained"
             color="primary"
+            sx={{
+              backgroundImage: `linear-gradient(to right, ${theme.palette.buttonColor.main}, ${theme.palette.primary.main})`,
+            }}
             onClick={handleSortButtonClick}
           >
             Сортировать
@@ -392,6 +411,9 @@ const DashboardPage = () => {
               key={card.id}
               className={classes.card}
               onClick={() => handleCardClick(card.id)}
+              sx={{
+                backgroundImage: `linear-gradient(to bottom, ${theme.palette.cardColor.main}, ${theme.palette.cardColor.fade})`,
+              }}
             >
               <CardContent>
                 <img
@@ -399,8 +421,20 @@ const DashboardPage = () => {
                   alt={card.title}
                   className={classes.cardImage}
                 />
-                <Typography variant="h6" component="h2">
-                  {card.stars}
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  fontSize="medium"
+                  sx={{ color: "white" }}
+                >
+                  <Box sx={{ display: "flex", flexDirection: "column" }}>
+                    {(card.difficultyRating === 0) &
+                    (card.interestRating === 0) &
+                    (card.timeConsumptionRating === 0) &
+                    (card.totalRating === 0)
+                      ? "Нет отзывов"
+                      : renderStarRating(card.totalRating, card.reviewCount)}
+                  </Box>
                 </Typography>
                 <Typography variant="h6" component="h2">
                   {card.title}

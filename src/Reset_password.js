@@ -12,6 +12,9 @@ import {
   Box,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { InputAdornment, IconButton } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppBarMain from "./AppBarMain";
 
 const theme = createTheme({
@@ -22,6 +25,9 @@ const theme = createTheme({
     },
     secondary: {
       main: "#dc004e",
+    },
+    gradient: {
+      main: "#4563DD",
     },
   },
   typography: {
@@ -71,10 +77,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ResetPassword = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setconfirmPassword] = useState("");
+  const [showconfirmPassword, setShowconfirmPassword] = useState(false);
+
   const token = new URLSearchParams(window.location.search).get("token");
   useEffect(() => {
     const root = document.getElementById("root");
@@ -86,7 +95,9 @@ const ResetPassword = () => {
   }, []);
   const handleSigninSubmit = async (event) => {
     event.preventDefault();
-
+    if (success) {
+      return;
+    }
     try {
       const response = await fetch("http://localhost:8080/reset_password", {
         method: "POST",
@@ -96,28 +107,36 @@ const ResetPassword = () => {
         body: JSON.stringify({ password, confirmPassword, token }),
       });
       if (response.ok) {
-        //const data = await response.json();
-
-        navigate("/dashboard");
+        setSuccess(true);
+        setError("Пароль успешно изменен. Выполните вход в аккаунт.");
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Неправильная почта или пароль");
-        console.error("Login failed:", response.status, errorData);
+        const errorText = await response.text();
+        if (errorText.length < 150) {
+          setError(errorText);
+        } else {
+          setError("Ошибка");
+        }
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setError("Ошибка подключения к серверу");
+      setError("Ошибка сети");
     }
-  };
-
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-
+  const handleconfirmPasswordChange = (event) => {
+    setconfirmPassword(event.target.value);
+  };
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+  const handleClickShowconfirmPassword = () => {
+    setShowconfirmPassword(!showconfirmPassword);
+  };
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   return (
     <div className={classes.root}>
       <AppBarMain />
@@ -136,11 +155,26 @@ const ResetPassword = () => {
             fullWidth
             id="password"
             label="Придумайте новый пароль"
+            type={showPassword ? "text" : "password"}
             name="password"
             autoComplete="password"
             autoFocus
             value={password}
             onChange={handlePasswordChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <TextField
             variant="outlined"
@@ -149,11 +183,25 @@ const ResetPassword = () => {
             fullWidth
             name="confirmPassword"
             label="Подтвердите пароль"
-            type="confirmPassword"
+            type={showconfirmPassword ? "text" : "password"}
             id="confirmPassword"
             autoComplete="confirmPassword"
             value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
+            onChange={handleconfirmPasswordChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowconfirmPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showconfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           {error && (
             <Typography variant="body2" color="error">
@@ -169,6 +217,7 @@ const ResetPassword = () => {
             sx={{
               marginTop: 2,
               marginBottom: 1,
+              backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
             }}
           >
             Готово
@@ -177,7 +226,7 @@ const ResetPassword = () => {
             fullWidth
             margin="normal"
             variant="outlined"
-            color="primary"
+            color="gradient"
             className={classes.submit}
             component={Link}
             to="/login"

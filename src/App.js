@@ -11,6 +11,8 @@ import CardDetailPage from "./CardDetailPage";
 import ProfilePage from "./ProfilePage";
 import ResetPassword from "./Reset_password";
 import ForgotPassword from "./Forgot_password";
+import Rating from "./Rating";
+import Comparing from "./Comparing";
 
 export default function App() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/reset_password" element={<ResetPassword />} />
           <Route path="/forgot_password" element={<ForgotPassword />} />
+          <Route path="/rating" element={<Rating />} />
+          <Route path="/compare" element={<Comparing />} />
         </Routes>
       </div>
     </Router>

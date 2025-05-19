@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 import {
-  CssBaseline,
   Paper,
   Avatar,
   Typography,
@@ -22,6 +21,9 @@ const theme = createTheme({
     },
     secondary: {
       main: "#dc004e",
+    },
+    gradient: {
+      main: "#4563DD",
     },
   },
   typography: {
@@ -96,7 +98,6 @@ const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("Login successful:", data);
         localStorage.setItem("token", data.token);
         localStorage.setItem("userEmail", email);
         navigate("/dashboard");
@@ -173,6 +174,7 @@ const Login = () => {
             sx={{
               marginTop: 2,
               marginBottom: 1,
+              backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
             }}
           >
             Войти
@@ -181,7 +183,7 @@ const Login = () => {
             fullWidth
             margin="normal"
             variant="outlined"
-            color="primary"
+            color="gradient"
             className={classes.submit}
             component={Link}
             to="/signup"

@@ -6,7 +6,6 @@ import {
   ListItemText,
   ListItemIcon,
   Radio,
-  ListItemButton,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
@@ -30,7 +29,7 @@ const SortOptions = ({ filters, checkedSortOptions, handleSortToggle }) => {
             onClick={handleSortToggle(index)}
           >
             <ListItemIcon>
-              <Radio // Radio!
+              <Radio
                 edge="start"
                 checked={checkedSortOptions === index}
                 tabIndex={-1}

@@ -60,6 +60,19 @@ body,
   height: 100%;
   z-index: -1;
 }
+#root.rating-background::before {
+  content: "";
+  background-image: url("https://github.com/mak48/data_for_project/blob/main/dots_background.jpg?raw=true");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
 
 body {
   margin: 0;

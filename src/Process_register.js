@@ -23,6 +23,9 @@ const theme = createTheme({
     secondary: {
       main: "#dc004e",
     },
+    gradient: {
+      main: "#4563DD",
+    },
   },
   typography: {
     button: {
@@ -134,17 +137,15 @@ const SignUp = () => {
     root.classList.add("login-background");
     const fetchMinors = async () => {
       try {
-        const response = await fetch("http://localhost:8080/minors"); // Замените '/minors' на фактический URL вашего API
+        const response = await fetch("http://localhost:8080/minors");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        // Преобразуем массив объектов в массив строк (только title)
         const titles = data.map((minor) => minor.title);
-        setMinors(titles); // Обновляем состояние minors полученными данными
+        setMinors(titles);
       } catch (error) {
         console.error("Ошибка при получении списка майноров:", error);
-        // Обработайте ошибку, например, отобразите сообщение об ошибке пользователю
       }
     };
 
@@ -351,6 +352,7 @@ const SignUp = () => {
             sx={{
               marginTop: 2,
               marginBottom: 1,
+              backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
             }}
           >
             Зарегистрироваться
@@ -359,7 +361,7 @@ const SignUp = () => {
             fullWidth
             margin="normal"
             variant="outlined"
-            color="primary"
+            color="gradient"
             className={classes.submit}
             component={Link}
             to="/login"

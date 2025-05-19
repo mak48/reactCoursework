@@ -1,4 +1,3 @@
-// ProfilePage.js
 import React, { useState, useEffect } from "react";
 import {
   Typography,
@@ -8,28 +7,50 @@ import {
   Avatar,
   Divider,
   Grid,
-  AppBar,
-  Toolbar,
+  FormControl,
   TextField,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Select,
+  MenuItem,
+  InputLabel,
+  IconButton,
+  Stack,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, Link } from "react-router-dom";
 import AppBarMain from "./AppBarMain";
+import ReviewCard from "./ReviewCard";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#29b6f6",
+      main: "#94B4FF",
+      contrastText: "#fff",
+    },
+    secondary: {
+      main: "#dc004e",
+    },
+    gradient: {
+      main: "#4563DD",
     },
   },
   typography: {
     fontFamily: "Roboto, sans-serif",
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          fontSize: "1rem",
+        },
+      },
+    },
   },
 });
 
@@ -42,11 +63,14 @@ const navLinks = [
 
 const ProfilePage = () => {
   const [reviews, setReviews] = useState([]);
-  const [user, setUser] = useState(null); // User data from API
+  const [user, setUser] = useState(null);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [reviewToDeleteId, setReviewToDeleteId] = useState(null);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [errorPassword, setErrorPassword] = useState("");
+  const [minors, setMinors] = useState([]);
+  const [minor, setMinor] = useState([]);
   const [passwordData, setPasswordData] = useState({
     login: "",
     currentPassword: "",
@@ -58,15 +82,20 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [newReview, setNewReview] = useState({
     minorTitle: "",
-    email: "",
+    email: localStorage.getItem("userEmail"),
     body: "",
     difficultyMark: 0,
     interestMark: 0,
     timeConsumptionMark: 0,
     totalMark: 0,
   });
+  const markOptions = [1, 2, 3, 4, 5];
 
   const handleCreateDialogOpen = () => {
+    setNewReview((prevReview) => ({
+      ...prevReview,
+      minorTitle: user?.minorTitle || "",
+    }));
     setOpenCreateDialog(true);
   };
 
@@ -87,6 +116,12 @@ const ProfilePage = () => {
   const handleInputChange = (event) => {
     setNewReview({ ...newReview, [event.target.name]: event.target.value });
   };
+  const handleMarkChange = (event) => {
+    setNewReview({
+      ...newReview,
+      [event.target.name]: parseInt(event.target.value, 10),
+    });
+  };
 
   const handleCreateReview = async () => {
     try {
@@ -106,8 +141,8 @@ const ProfilePage = () => {
       setReviews((prevReviews) => [...prevReviews, createdReview]);
       handleCreateDialogClose();
       setNewReview({
-        minorTitle: "",
-        email: "",
+        minorTitle: user.minorTitle,
+        email: localStorage.getItem("userEmail"),
         body: "",
         difficultyMark: 0,
         interestMark: 0,
@@ -147,15 +182,28 @@ const ProfilePage = () => {
     }
   };
 
-  // Fetch user data and reviews on component mount
   useEffect(() => {
     const storedEmail = localStorage.getItem("userEmail");
     if (storedEmail) {
       fetchUserData(storedEmail);
     } else {
-      // Redirect to login using React Router's navigate function
       navigate("/login");
     }
+    const fetchMinors = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/minors");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const titles = data.map((minor) => minor.title);
+        setMinors(titles);
+      } catch (error) {
+        console.error("Ошибка при получении списка майноров:", error);
+      }
+    };
+
+    fetchMinors();
   }, []);
 
   const fetchUserData = async (email) => {
@@ -181,7 +229,10 @@ const ProfilePage = () => {
       console.error("Error fetching data:", error);
     }
   };
-
+  const handleExit = () => {
+    localStorage.removeItem("userEmail");
+    navigate("/login");
+  };
   const handlePasswordDialogOpen = () => {
     setOpenPasswordDialog(true);
   };
@@ -205,6 +256,7 @@ const ProfilePage = () => {
 
   const handleUpdatePassword = async () => {
     try {
+      passwordData.login = localStorage.getItem("userEmail");
       const response = await fetch(
         "http://localhost:8080/auth/update_password",
         {
@@ -215,22 +267,19 @@ const ProfilePage = () => {
           body: JSON.stringify(passwordData),
         }
       );
-
-      if (!response.ok) {
-        throw new Error(`Update password failed: ${response.status}`);
+      if (response.ok) {
+        handlePasswordDialogClose();
+      } else {
+        const errorPassword = await response.text();
+        setErrorPassword(errorPassword || "Не удалось сменить пароль");
       }
-
-      // Handle successful password update (e.g., show a success message)
-      console.log("Password updated successfully!");
-      handlePasswordDialogClose();
     } catch (error) {
+      setErrorPassword("Не удалось сменить пароль");
       console.error("Error updating password:", error);
-      // Handle error (e.g., show an error message)
     }
   };
 
   const handleEditProfileDialogOpen = () => {
-    // Initialize editProfileData with current user data
     setEditProfileData({
       name: user?.name || "",
       minorTitle: user?.minorTitle || "",
@@ -243,7 +292,12 @@ const ProfilePage = () => {
   const handleEditProfileDialogClose = () => {
     setOpenEditProfileDialog(false);
   };
-
+  const handleMinorChange = (event) => {
+    setEditProfileData({
+      ...editProfileData,
+      minorTitle: event.target.value,
+    });
+  };
   const handleEditProfileInputChange = (event) => {
     setEditProfileData({
       ...editProfileData,
@@ -259,7 +313,7 @@ const ProfilePage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: user?.email, // Use current user email
+          email: user.email,
           patch: editProfileData,
         }),
       });
@@ -267,9 +321,7 @@ const ProfilePage = () => {
       if (!response.ok) {
         throw new Error(`Update profile failed: ${response.status}`);
       }
-
-      // Update user data in state
-      setUser({ ...user, ...editProfileData }); // Optimistically update
+      setUser({ ...user, ...editProfileData });
       handleEditProfileDialogClose();
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -280,53 +332,81 @@ const ProfilePage = () => {
     <ThemeProvider theme={theme}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBarMain />
-        <Container sx={{ paddingTop: "64px" }}>
+        <Container sx={{ paddingTop: theme.spacing(8) }}>
           <Box sx={{ mt: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Avatar
-                sx={{ width: 70, height: 70, bgcolor: "primary.main", mr: 2 }}
+                sx={{ width: 140, height: 140, bgcolor: "primary.main", mr: 2 }}
               >
-                <PersonIcon sx={{ fontSize: 40 }} />
+                <PersonIcon sx={{ fontSize: 100 }} />
               </Avatar>
               <Box>
                 {user ? (
                   <>
-                    <Typography variant="h5">{user.name}</Typography>
-                    <Typography variant="subtitle2">{user.email}</Typography>
-                    <Typography variant="body2">
-                      {user.minorTitle}, {user.courseTitle}
+                    <Typography
+                      variant="h4"
+                      color="gradient"
+                      sx={{ mt: 2, mb: 1 }}
+                    >
+                      {user.name}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      Образовательная программа: {user.courseTitle}
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{ mb: 2 }}>
+                      Майнор: {user.minorTitle}
                     </Typography>
                   </>
                 ) : (
                   <Typography>Загрузка...</Typography>
                 )}
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   onClick={handleEditProfileDialogOpen}
-                  sx={{ mr: 1 }}
+                  sx={{
+                    backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
+                    mr: 2,
+                  }}
                 >
                   Редактировать профиль
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   onClick={handlePasswordDialogOpen}
+                  sx={{
+                    backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
+                    mr: 2,
+                  }}
                 >
                   Изменить пароль
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={handleExit}
+                  sx={{
+                    backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
+                  }}
+                >
+                  Выйти из аккаунта
                 </Button>
               </Box>
             </Box>
             <Divider />
             <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+              <Typography variant="h5" color="gradient" sx={{ mb: 1 }}>
                 Мои отзывы
               </Typography>
               <Box sx={{ mb: 2 }}>
                 <Button
                   variant="contained"
                   size="small"
-                  sx={{ mr: 1 }}
+                  sx={{
+                    backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
+                    mr: 1,
+                  }}
                   onClick={handleCreateDialogOpen}
                 >
                   Добавить
@@ -335,31 +415,18 @@ const ProfilePage = () => {
 
               <Grid container spacing={2}>
                 {reviews.map((review) => (
-                  <Grid item xs={12} sm={6} md={4} key={review.id}>
-                    <Box
-                      sx={{
-                        bgcolor: "#e1f5fe",
-                        borderRadius: 2,
-                        padding: 2,
-                        boxShadow: 1,
-                      }}
-                    >
-                      <Typography variant="subtitle1">{review.body}</Typography>{" "}
-                      {/* Changed review.comment to review.body */}
-                      <Divider sx={{ my: 1 }} />
-                      <Typography variant="caption">
-                        {review.createDate} <br />{" "}
-                        {/* Changed review.date to review.createDate */}
-                        {review.minorTitle}
-                      </Typography>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleDeleteDialogOpen(review.id)}
-                      >
-                        Удалить
-                      </Button>
-                    </Box>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={review.id}
+                    sx={{ height: "100%" }}
+                  >
+                    <ReviewCard
+                      review={review}
+                      handleDeleteDialogOpen={handleDeleteDialogOpen}
+                    />
                   </Grid>
                 ))}
               </Grid>
@@ -372,18 +439,6 @@ const ProfilePage = () => {
       <Dialog open={openPasswordDialog} onClose={handlePasswordDialogClose}>
         <DialogTitle>Изменить пароль</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="login"
-            name="login"
-            label="Логин"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={passwordData.login}
-            onChange={handlePasswordInputChange}
-          />
           <TextField
             margin="dense"
             id="currentPassword"
@@ -417,6 +472,11 @@ const ProfilePage = () => {
             value={passwordData.confirmNewPassword}
             onChange={handlePasswordInputChange}
           />
+          {errorPassword && (
+            <Typography variant="body2" color="error">
+              {errorPassword}
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handlePasswordDialogClose}>Отмена</Button>
@@ -445,37 +505,40 @@ const ProfilePage = () => {
           />
           <TextField
             margin="dense"
-            id="minorTitle"
-            name="minorTitle"
-            label="Майнор"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={editProfileData.minorTitle}
-            onChange={handleEditProfileInputChange}
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            name="email"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="standard"
-            value={editProfileData.email}
-            onChange={handleEditProfileInputChange}
-          />
-          <TextField
-            margin="dense"
             id="courseTitle"
             name="courseTitle"
-            label="Курс"
+            label="Образовательная программа"
             type="text"
             fullWidth
             variant="standard"
             value={editProfileData.courseTitle}
             onChange={handleEditProfileInputChange}
           />
+          <FormControl variant="outlined" fullWidth margin="normal" required>
+            <InputLabel id="minor-label">Майнор</InputLabel>
+            <Select
+              labelId="minor-label"
+              fullWidth
+              id="minorTitle"
+              value={editProfileData.minorTitle}
+              onChange={handleMinorChange}
+              label="Майнор"
+              MenuProps={{
+                MenuListProps: {
+                  style: {
+                    maxheight: "200px",
+                    overflowy: "scroll",
+                  },
+                },
+              }}
+            >
+              {minors.map((option, index) => (
+                <MenuItem key={index} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleEditProfileDialogClose}>Отмена</Button>
@@ -491,6 +554,8 @@ const ProfilePage = () => {
           </DialogContentText>
           <TextField
             autoFocus
+            readOnly={true}
+            onKeyDown={(e) => e.preventDefault()}
             margin="dense"
             id="minorTitle"
             name="minorTitle"
@@ -503,29 +568,90 @@ const ProfilePage = () => {
           />
           <TextField
             margin="dense"
-            id="email"
-            name="email"
-            label="Email"
-            type="email"
-            fullWidth
-            variant="standard"
-            value={newReview.email}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
             id="body"
             name="body"
             label="Отзыв"
             type="text"
             fullWidth
             multiline
-            rows={4}
+            rows={6}
             variant="standard"
             value={newReview.body}
             onChange={handleInputChange}
           />
-          {/* Add difficultyMark, interestMark, timeConsumptionMark, totalMark inputs if needed */}
+          <FormControl variant="standard" fullWidth margin="dense">
+            <InputLabel id="difficultyMark-label">Сложность</InputLabel>
+            <Select
+              labelId="difficultyMark-label"
+              id="difficultyMark"
+              name="difficultyMark"
+              value={newReview.difficultyMark}
+              onChange={handleMarkChange}
+              label="Сложность"
+            >
+              {markOptions.map((mark) => (
+                <MenuItem key={mark} value={mark}>
+                  {mark}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl variant="standard" fullWidth margin="dense">
+            <InputLabel id="interestMark-label">Интерес</InputLabel>
+            <Select
+              labelId="interestMark-label"
+              id="interestMark"
+              name="interestMark"
+              value={newReview.interestMark}
+              onChange={handleMarkChange}
+              label="Интерес"
+            >
+              {markOptions.map((mark) => (
+                <MenuItem key={mark} value={mark}>
+                  {mark}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl variant="standard" fullWidth margin="dense">
+            <InputLabel id="timeConsumptionMark-label">
+              Затраты по времени
+            </InputLabel>
+            <Select
+              labelId="timeConsumptionMark-label"
+              id="timeConsumptionMark"
+              name="timeConsumptionMark"
+              value={newReview.timeConsumptionMark}
+              onChange={handleMarkChange}
+              label="Затраты по времени"
+            >
+              {markOptions.map((mark) => (
+                <MenuItem key={mark} value={mark}>
+                  {mark}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl variant="standard" fullWidth margin="dense">
+            <InputLabel id="totalMark-label">Общая оценка</InputLabel>
+            <Select
+              labelId="totalMark-label"
+              id="totalMark"
+              name="totalMark"
+              value={newReview.totalMark}
+              onChange={handleMarkChange}
+              label="Общая оценка"
+            >
+              {markOptions.map((mark) => (
+                <MenuItem key={mark} value={mark}>
+                  {mark}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCreateDialogClose}>Отмена</Button>

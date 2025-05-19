@@ -22,6 +22,9 @@ const theme = createTheme({
     secondary: {
       main: "#dc004e",
     },
+    gradient: {
+      main: "#4563DD",
+    },
   },
   typography: {
     button: {
@@ -92,13 +95,17 @@ const ForgotPassword = () => {
         body: JSON.stringify({ email }),
       });
       if (response.ok) {
-        navigate("/reset_password");
+        setError("Ссылка для смены пароля отправлена на почту");
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Неправильная почта");
+        const errorText = await response.text();
+        if (errorText.length < 150) {
+          setError(errorText);
+        } else {
+          setError("Ошибка");
+        }
       }
     } catch (error) {
-      setError("Ошибка подключения к серверу");
+      setError("Ошибка сети");
     }
   };
 
@@ -148,6 +155,7 @@ const ForgotPassword = () => {
             sx={{
               marginTop: 2,
               marginBottom: 1,
+              backgroundImage: `linear-gradient(to right, ${theme.palette.gradient.main}, ${theme.palette.primary.main})`,
             }}
           >
             Восстановить пароль
