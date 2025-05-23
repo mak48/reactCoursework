@@ -67,7 +67,6 @@ function MyDrawer() {
     }
 
     setCheckedCategories(newChecked);
-    //
     console.log("Selected Categories:", newChecked);
   };
 
@@ -82,7 +81,6 @@ function MyDrawer() {
     }
 
     setCheckedDates(newChecked);
-    //
     console.log("Selected Dates:", newChecked);
   };
 

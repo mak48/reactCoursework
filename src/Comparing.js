@@ -17,7 +17,7 @@ import {
   Paper,
   Avatar,
 } from "@mui/material";
-
+import config from "./config";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   ListItemIcon,
@@ -109,7 +109,7 @@ const Comparing = () => {
   const classes = useStyles();
   useEffect(() => {
     axios
-      .get("http://localhost:8080/minors")
+      .get(`${config.apiUrl}/minors`)
       .then((response) => {
         setMinors(response.data);
       })
@@ -145,7 +145,7 @@ const Comparing = () => {
     try {
       const idsString = checkedMinors.map((id) => `ids=${id}`).join("&");
       const response = await fetch(
-        `http://localhost:8080/comparison_table?${idsString}`
+        `${config.apiUrl}/comparison_table?${idsString}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

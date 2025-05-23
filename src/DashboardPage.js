@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import config from "./config";
 import {
   ListItemIcon,
   Checkbox,
@@ -174,7 +175,7 @@ const DashboardPage = () => {
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/minors")
+    fetch(`${config.apiUrl}/minors`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -259,7 +260,7 @@ const DashboardPage = () => {
 
     if (categoryIds.length === 0 && !comparator) {
       try {
-        const response = await fetch("http://localhost:8080/minors");
+        const response = await fetch(`${config.apiUrl}/minors`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -287,13 +288,13 @@ const DashboardPage = () => {
     const params = {};
     let url = "";
     if (categoryIds.length === 0) {
-      url = "http://localhost:8080/minors_sort";
+      url = `${config.apiUrl}/minors_sort`;
       params.comparator = comparator;
     } else if (!comparator) {
-      url = "http://localhost:8080/categories";
+      url = `${config.apiUrl}/categories`;
       params.categoryIds = categoryIds.join(",");
     } else {
-      url = "http://localhost:8080/categories_sort";
+      url = `${config.apiUrl}/categories_sort`;
       params.categoryIds = categoryIds.join(",");
       params.comparator = comparator;
     }

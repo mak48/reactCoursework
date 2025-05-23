@@ -14,6 +14,8 @@ import { InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import AppBarMain from "./AppBarMain";
+import config from "./config";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -137,7 +139,7 @@ const SignUp = () => {
     root.classList.add("login-background");
     const fetchMinors = async () => {
       try {
-        const response = await fetch("http://localhost:8080/minors");
+        const response = await fetch(`${config.apiUrl}/minors`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -168,16 +170,13 @@ const SignUp = () => {
     };
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/auth/process_register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/auth/process_register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (response.ok) {
         console.log("Регистрация прошла успешно!");

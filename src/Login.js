@@ -10,6 +10,7 @@ import {
   Button,
   Box,
 } from "@mui/material";
+import config from "./config";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import AppBarMain from "./AppBarMain";
 
@@ -89,7 +90,7 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/auth/authenticate", {
+      const response = await fetch(`${config.apiUrl}/auth/authenticate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

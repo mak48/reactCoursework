@@ -11,6 +11,7 @@ import {
   Button,
   Box,
 } from "@mui/material";
+import config from "./config";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
@@ -99,7 +100,7 @@ const ResetPassword = () => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:8080/reset_password", {
+      const response = await fetch(`${config.apiUrl}/reset_password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -10,6 +10,7 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+import config from "./config";
 import StarIcon from "@mui/icons-material/Star";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBarMain from "./AppBarMain";
@@ -59,7 +60,7 @@ const CardDetailPage = () => {
     const fetchCardDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/comparison_table?ids=${cardId}`
+          `${config.apiUrl}/comparison_table?ids=${cardId}`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -90,7 +91,7 @@ const CardDetailPage = () => {
       });
 
       const response = await fetch(
-        `http://localhost:8080/minor/review?${params.toString()}`,
+        `${config.apiUrl}/minor/review?${params.toString()}`,
         {
           method: "GET",
           headers: {
@@ -120,7 +121,7 @@ const CardDetailPage = () => {
         minorId: cardId,
       });
       const response = await fetch(
-        `http://localhost:8080/minor/review/sortByDate?${params.toString()}`
+        `${config.apiUrl}/minor/review/sortByDate?${params.toString()}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

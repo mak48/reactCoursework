@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { makeStyles } from "@mui/styles";
+import config from "./config";
 
 const theme = createTheme({
   palette: {
@@ -85,7 +86,7 @@ const UpdatePassword = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/update_password", {
+      const response = await fetch(`${config.apiUrl}/update_password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

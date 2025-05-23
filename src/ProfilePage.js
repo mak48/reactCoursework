@@ -25,6 +25,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 import AppBarMain from "./AppBarMain";
 import ReviewCard from "./ReviewCard";
+import config from "./config";
 
 const theme = createTheme({
   palette: {
@@ -125,7 +126,7 @@ const ProfilePage = () => {
 
   const handleCreateReview = async () => {
     try {
-      const response = await fetch("http://localhost:8080/minor/review", {
+      const response = await fetch(`${config.apiUrl}/minor/review`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -157,7 +158,7 @@ const ProfilePage = () => {
   const handleDeleteReview = async () => {
     try {
       const storedEmail = localStorage.getItem("userEmail");
-      const response = await fetch("http://localhost:8080/minor/review", {
+      const response = await fetch(`${config.apiUrl}/minor/review`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -191,7 +192,7 @@ const ProfilePage = () => {
     }
     const fetchMinors = async () => {
       try {
-        const response = await fetch("http://localhost:8080/minors");
+        const response = await fetch(`${config.apiUrl}/minors`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -208,9 +209,7 @@ const ProfilePage = () => {
 
   const fetchUserData = async (email) => {
     try {
-      const userResponse = await fetch(
-        `http://localhost:8080/user?email=${email}`
-      );
+      const userResponse = await fetch(`${config.apiUrl}/user?email=${email}`);
       if (!userResponse.ok) {
         throw new Error(`Failed to fetch user: ${userResponse.status}`);
       }
@@ -218,7 +217,7 @@ const ProfilePage = () => {
       setUser(userData);
 
       const reviewsResponse = await fetch(
-        `http://localhost:8080/user/reviews?email=${email}`
+        `${config.apiUrl}/user/reviews?email=${email}`
       );
       if (!reviewsResponse.ok) {
         throw new Error(`Failed to fetch reviews: ${reviewsResponse.status}`);
@@ -257,16 +256,13 @@ const ProfilePage = () => {
   const handleUpdatePassword = async () => {
     try {
       passwordData.login = localStorage.getItem("userEmail");
-      const response = await fetch(
-        "http://localhost:8080/auth/update_password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(passwordData),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/auth/update_password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(passwordData),
+      });
       if (response.ok) {
         handlePasswordDialogClose();
       } else {
@@ -307,7 +303,7 @@ const ProfilePage = () => {
 
   const handleUpdateProfile = async () => {
     try {
-      const response = await fetch("http://localhost:8080/user", {
+      const response = await fetch(`${config.apiUrl}/user`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

@@ -29,6 +29,7 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
+import config from "./config";
 const theme = createTheme({
   palette: {
     primary: {
@@ -126,7 +127,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         patch: patchData,
       };
 
-      const response = await fetch("http://localhost:8080/minor/review", {
+      const response = await fetch(`${config.apiUrl}/minor/review`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +148,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
   const fetchComments = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/minor/review/comment?reviewId=${review.id}`
+        `${config.apiUrl}/minor/review/comment?reviewId=${review.id}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -167,7 +168,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
       const email = localStorage.getItem("userEmail");
       try {
         const response = await fetch(
-          `http://localhost:8080/minor/review/like?reviewId=${review.id}`
+          `${config.apiUrl}/minor/review/like?reviewId=${review.id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -194,7 +195,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
     const email = localStorage.getItem("userEmail");
     try {
       const response = await fetch(
-        `http://localhost:8080/minor/review/like?reviewId=${review.id}`
+        `${config.apiUrl}/minor/review/like?reviewId=${review.id}`
       );
       if (!response.ok) {
         console.error("Failed to fetch like status:", response.status);
@@ -225,7 +226,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         email: email,
         value: value,
       };
-      const response = await fetch("http://localhost:8080/minor/review/like", {
+      const response = await fetch(`${config.apiUrl}/minor/review/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -261,7 +262,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         email: localStorage.getItem("userEmail"),
       };
 
-      const response = await fetch("http://localhost:8080/minor/review/like", {
+      const response = await fetch(`${config.apiUrl}/minor/review/like`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -298,16 +299,13 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         parentId: 0,
       };
 
-      const response = await fetch(
-        "http://localhost:8080/minor/review/comment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/minor/review/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
       if (response.ok) {
         const newComment = await response.json();
@@ -330,16 +328,13 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         email: email,
       };
 
-      const response = await fetch(
-        "http://localhost:8080/minor/review/comment",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/minor/review/comment`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
       if (response.ok) {
         setComments(comments.filter((comment) => comment.id !== commentId));
@@ -372,16 +367,13 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         body: editingCommentBody,
       };
 
-      const response = await fetch(
-        "http://localhost:8080/minor/review/comment",
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/minor/review/comment`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
       if (response.ok) {
         const updatedComment = await response.json();

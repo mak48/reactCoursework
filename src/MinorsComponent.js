@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import config from "./config";
 
 function MinorsComponent() {
   const [minors, setMinors] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/minors")
+      .get(`${config.apiUrl}/minors`)
       .then((response) => {
         setMinors(response.data);
       })

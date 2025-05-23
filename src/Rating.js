@@ -4,6 +4,7 @@ import { makeStyles } from "@mui/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import AppBarMain from "./AppBarMain";
+import config from "./config";
 
 const theme = createTheme({
   palette: {
@@ -78,7 +79,7 @@ const Rating = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/users")
+    fetch(`${config.apiUrl}/users`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

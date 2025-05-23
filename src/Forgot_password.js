@@ -10,6 +10,7 @@ import {
   Button,
   Box,
 } from "@mui/material";
+import config from "./config";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import AppBarMain from "./AppBarMain";
 
@@ -87,7 +88,7 @@ const ForgotPassword = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/forgot_password", {
+      const response = await fetch(`${config.apiUrl}/forgot_password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
