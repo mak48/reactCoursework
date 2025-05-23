@@ -5,7 +5,7 @@ import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 import Box from "@mui/material/Box";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";

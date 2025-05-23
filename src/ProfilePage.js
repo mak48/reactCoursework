@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router";
 import AppBarMain from "./AppBarMain";
 import ReviewCard from "./ReviewCard";
 

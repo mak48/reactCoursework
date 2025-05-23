@@ -1,6 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import RegisterForm from "./RegisterForm";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router";
 import WelcomePage from "./WelcomePage";
 import PasswordReset from "./PasswordReset";
 import DashboardPage from "./DashboardPage";

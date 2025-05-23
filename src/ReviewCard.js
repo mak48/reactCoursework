@@ -66,8 +66,10 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
   const overflow = "hidden";
   const textOverflow = "ellipsis";
   const wordWrap = "break-word";
-  const [likesCount, setLikesCount] = useState(review.likesCount);
-  const [dislikesCount, setDislikesCount] = useState(review.dislikesCount);
+  const [likesCount, setLikesCount] = useState(review?.likesCount || 0);
+  const [dislikesCount, setDislikesCount] = useState(
+    review?.dislikesCount || 0
+  );
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [liked, setLiked] = useState(null);
   const [openReviewDialog, setOpenReviewDialog] = useState(false);
@@ -76,11 +78,11 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentBody, setEditingCommentBody] = useState("");
   const [editedReview, setEditedReview] = useState({
-    body: review.body,
-    difficultyMark: review.difficultyMark,
-    interestMark: review.interestMark,
-    timeConsumptionMark: review.timeConsumptionMark,
-    totalMark: review.totalMark,
+    body: review?.body || "",
+    difficultyMark: review?.difficultyMark || 0,
+    interestMark: review?.interestMark || 0,
+    timeConsumptionMark: review?.timeConsumptionMark || 0,
+    totalMark: review?.totalMark || 0,
   });
   const handleMarkEditChange = (event) => {
     const { name, value } = event.target;
@@ -142,20 +144,34 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
       console.error("Error updating review:", error);
     }
   };
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/minor/review/comment?reviewId=${review.id}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data);
+      }
+    } catch (error) {
+      console.error("Ошибка при получении комментариев:", error);
+    }
+  };
   useEffect(() => {
+    setLikesCount(review.likesCount);
+    setDislikesCount(review.dislikesCount);
+    if (openReviewDialog && review.id) {
+      fetchComments();
+    }
     const fetchInitialLikeStatus = async () => {
       const email = localStorage.getItem("userEmail");
-
       try {
         const response = await fetch(
           `http://localhost:8080/minor/review/like?reviewId=${review.id}`
         );
-
         if (response.ok) {
           const data = await response.json();
-
           const userLike = data.find((item) => item.email === email);
-
           if (userLike) {
             setLiked(userLike.value);
           } else {
@@ -171,9 +187,8 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         console.error("Error fetching initial like status:", error);
       }
     };
-
     fetchInitialLikeStatus();
-  }, [review.id]);
+  }, [openReviewDialog, review.id, review.id]);
 
   const handleLike = async (value) => {
     const email = localStorage.getItem("userEmail");
@@ -181,16 +196,12 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
       const response = await fetch(
         `http://localhost:8080/minor/review/like?reviewId=${review.id}`
       );
-
       if (!response.ok) {
         console.error("Failed to fetch like status:", response.status);
         return;
       }
-
       const data = await response.json();
-
       const userLike = data.find((item) => item.email === email);
-
       if (userLike) {
         if (userLike.value === value) {
           await handleDeleteLike(value, userLike.id);
@@ -208,14 +219,12 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
 
   const handleAddLike = async (value) => {
     const email = localStorage.getItem("userEmail");
-
     try {
       const requestBody = {
         reviewId: review.id,
         email: email,
         value: value,
       };
-
       const response = await fetch("http://localhost:8080/minor/review/like", {
         method: "POST",
         headers: {
@@ -223,7 +232,6 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         },
         body: JSON.stringify(requestBody),
       });
-
       if (response.ok) {
         if (value) {
           setLikesCount(likesCount + 1);
@@ -287,7 +295,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
         reviewId: review.id,
         email: email,
         body: newCommentBody,
-        parentId: 0, // Assuming no parentId for top-level comments
+        parentId: 0,
       };
 
       const response = await fetch(
@@ -695,7 +703,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
               <Typography variant="body2">{review.totalMark}</Typography>
             </Box>
 
-            <Typography variant="body1" mt={1}>
+            <Typography variant="body1" mt={1} wordBreak="break-word">
               {review.body}
             </Typography>
 
@@ -752,6 +760,7 @@ const ReviewCard = ({ review, handleDeleteDialogOpen }) => {
                     />
                   ) : (
                     <ListItemText
+                      wordBreak="break-word"
                       primary={comment.userName}
                       secondary={comment.body}
                     />

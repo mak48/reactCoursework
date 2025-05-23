@@ -22,9 +22,8 @@ import {
   ListItemButton,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
-import axios from "axios";
 import SortOptions from "./SortOptions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import AppBarMain from "./AppBarMain";
 
 const theme = createTheme({
@@ -175,10 +174,15 @@ const DashboardPage = () => {
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/minors")
+    fetch("http://localhost:8080/minors")
       .then((response) => {
-        const fetchedCards = response.data.map((minor) => ({
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const fetchedCards = data.map((minor) => ({
           id: minor.id,
           title: minor.title,
           image: minor.link,
@@ -255,13 +259,14 @@ const DashboardPage = () => {
 
     if (categoryIds.length === 0 && !comparator) {
       try {
-        const response = await axios.get("http://localhost:8080/minors");
+        const response = await fetch("http://localhost:8080/minors");
 
-        if (response.status !== 200) {
+        if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
 
-        const fetchedCards = response.data.map((minor) => ({
+        const fetchedCards = data.map((minor) => ({
           id: minor.id,
           title: minor.title,
           description: minor.description,
@@ -294,15 +299,16 @@ const DashboardPage = () => {
     }
 
     try {
-      const response = await axios.get(url, {
-        params: params,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        url + "?" + new URLSearchParams(params).toString()
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       if (response.status === 200) {
-        const fetchedCards = response.data.map((minor) => ({
+        const data = await response.json();
+        const fetchedCards = data.map((minor) => ({
           id: minor.id,
           title: minor.title,
           image: minor.link,

@@ -1,11 +1,10 @@
-// src/components/RegisterForm.js
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    email: '',
+    username: "",
+    password: "",
+    email: "",
   });
   const [errors, setErrors] = useState({});
 
@@ -19,9 +18,9 @@ const RegisterForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.username) newErrors.username = 'Имя пользователя обязательно';
-    if (!formData.password) newErrors.password = 'Пароль обязателен';
-    if (!formData.email) newErrors.email = 'Email обязателен';
+    if (!formData.username) newErrors.username = "Имя пользователя обязательно";
+    if (!formData.password) newErrors.password = "Пароль обязателен";
+    if (!formData.email) newErrors.email = "Email обязателен";
     return newErrors;
   };
 
@@ -32,8 +31,8 @@ const RegisterForm = () => {
       setErrors(validationErrors);
     } else {
       setErrors({});
-      
-      console.log('Данные для регистрации:', formData);
+
+      console.log("Данные для регистрации:", formData);
     }
   };
 
@@ -51,7 +50,9 @@ const RegisterForm = () => {
             required
           />
         </label>
-        {errors.username && <span style={{ color: 'red' }}>{errors.username}</span>}
+        {errors.username && (
+          <span style={{ color: "red" }}>{errors.username}</span>
+        )}
       </div>
       <div>
         <label>
@@ -64,7 +65,7 @@ const RegisterForm = () => {
             required
           />
         </label>
-        {errors.email && <span style={{ color: 'red' }}>{errors.email}</span>}
+        {errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
       </div>
       <div>
         <label>
@@ -77,7 +78,9 @@ const RegisterForm = () => {
             required
           />
         </label>
-        {errors.password && <span style={{ color: 'red' }}>{errors.password}</span>}
+        {errors.password && (
+          <span style={{ color: "red" }}>{errors.password}</span>
+        )}
       </div>
       <button type="submit">Зарегистрироваться</button>
     </form>

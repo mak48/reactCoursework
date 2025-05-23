@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Drawer,
   Toolbar,
@@ -10,48 +10,43 @@ import {
   Checkbox,
   Collapse,
   ListItemButton,
-} from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();
 const useStyles = makeStyles(() => ({
   drawer: {
-    width: 240, 
+    width: 240,
     flexShrink: 0,
   },
   drawerPaper: {
     width: 240,
   },
   drawerContainer: {
-    overflow: 'auto',
+    overflow: "auto",
     padding: theme.spacing(2),
   },
   sidebarTitle: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
-    fontWeight: 600, 
+    fontWeight: 600,
   },
 }));
 const filters = {
-    sort: [
-        'Сложность',
-        'Интересность',
-        'Временязатратность',
-        'Общий рейтинг'
-    ],
-    categories: [
-        'Анализ данных',
-        'Бизнес и менеджмент',
-        'Естествознание, математика',
-        'История и философия',
-        'Культорология, регионоведение',
-        'Медиа и коммуникации',
-        'Филология и языкознание'
-    ],
-    dates: ['2024', '2023', '2022']
-}
+  sort: ["Сложность", "Интересность", "Временязатратность", "Общий рейтинг"],
+  categories: [
+    "Анализ данных",
+    "Бизнес и менеджмент",
+    "Естествознание, математика",
+    "История и философия",
+    "Культорология, регионоведение",
+    "Медиа и коммуникации",
+    "Филология и языкознание",
+  ],
+  dates: ["2024", "2023", "2022"],
+};
 function MyDrawer() {
   const classes = useStyles();
   const [openSort, setOpenSort] = useState(false);
@@ -60,7 +55,6 @@ function MyDrawer() {
 
   const [checkedCategories, setCheckedCategories] = useState([]);
   const [checkedDates, setCheckedDates] = useState([]);
-
 
   const handleCategoryToggle = (value) => () => {
     const currentIndex = checkedCategories.indexOf(value);
@@ -73,7 +67,7 @@ function MyDrawer() {
     }
 
     setCheckedCategories(newChecked);
-    // 
+    //
     console.log("Selected Categories:", newChecked);
   };
 
@@ -88,7 +82,7 @@ function MyDrawer() {
     }
 
     setCheckedDates(newChecked);
-    // 
+    //
     console.log("Selected Dates:", newChecked);
   };
 
@@ -102,7 +96,6 @@ function MyDrawer() {
     >
       <Toolbar />
       <div className={classes.drawerContainer}>
-        {/*  */}
         <Typography variant="subtitle1" className={classes.sidebarTitle}>
           <ListItemButton onClick={() => setOpenSort(!openSort)}>
             <ListItemText primary="Сортировать" />
@@ -129,7 +122,12 @@ function MyDrawer() {
         <Collapse in={openCategories} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {filters.categories.map((text, index) => (
-              <ListItem button key={text} sx={{ pl: 4 }} onClick={handleCategoryToggle(text)}>
+              <ListItem
+                button
+                key={text}
+                sx={{ pl: 4 }}
+                onClick={handleCategoryToggle(text)}
+              >
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
@@ -153,7 +151,12 @@ function MyDrawer() {
         <Collapse in={openDates} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {filters.dates.map((text, index) => (
-              <ListItem button key={text} sx={{ pl: 4 }} onClick={handleDateToggle(text)}>
+              <ListItem
+                button
+                key={text}
+                sx={{ pl: 4 }}
+                onClick={handleDateToggle(text)}
+              >
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
