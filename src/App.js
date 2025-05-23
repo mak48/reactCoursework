@@ -15,7 +15,7 @@ import Comparing from "./Comparing";
 
 export default function App() {
   return (
-    <Router>
+    <Router basename="/reactCoursework">
       <div className="app-container">
         <Routes>
           <Route path="/" element={<DashboardPage />} />
