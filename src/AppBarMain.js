@@ -1,8 +1,13 @@
 import React from "react";
+import { Link, BrowserRouter as Router, Routes, Route } from "react-router";
 import { makeStyles } from "@mui/styles";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import DashboardPage from "./DashboardPage";
+import Rating from "./Rating";
+import Comparing from "./Comparing";
+import ProfilePage from "./ProfilePage";
 
 const theme = createTheme({
   palette: {
@@ -63,9 +68,19 @@ const AppBarMain = () => {
           ПроМайнор
         </Typography>
         {navLinks.map((link, index) => (
-          <Button color="inherit" key={index} href={link.to} sx={{ ml: 4 }}>
-            {link.text}
-          </Button>
+          <Link
+            to={link.to}
+            key={index}
+            style={{
+              marginLeft: theme.spacing(4),
+              color: "white",
+              textDecoration: "none",
+            }}
+          >
+            <Button color="inherit" sx={{ ml: 0 }}>
+              {link.text}
+            </Button>
+          </Link>
         ))}
       </Toolbar>
     </AppBar>
@@ -74,10 +89,18 @@ const AppBarMain = () => {
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBarMain />
-    </ThemeProvider>
+    <Router basename="/reactCoursework">
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AppBarMain />
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/rating" element={<Rating />} />
+          <Route path="/compare" element={<Comparing />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </ThemeProvider>
+    </Router>
   );
 }
 
